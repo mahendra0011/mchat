@@ -1,0 +1,26 @@
+{
+  "name": "orbit-chat-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Next-Generation Chat Platform - Monorepo",
+  "scripts": {
+    "build": "pnpm --filter \"./packages/*\" build && pnpm --filter \"./apps/*\" build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "licenses:check": "node scripts/check-licenses.mjs",
+    "dev:api": "pnpm --filter @orbit/api dev",
+    "dev:web": "pnpm --filter @orbit/web dev",
+    "dev": "pnpm --parallel --filter @orbit/api --filter @orbit/web dev"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^20.14.12",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.10",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.71.2"
+  }
+}

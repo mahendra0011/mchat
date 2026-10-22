@@ -1,0 +1,27 @@
+{
+  "name": "@orbit/ui-native",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "description": "Migration target: React Native component library (staged — not yet installed into the workspace).",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "node --test dist/**/*.test.js"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-native": "0.74.5"
+  },
+  "dependencies": {
+    "@orbit/design-tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "react": "^18.3.1",
+    "react-native": "0.74.5",
+    "typescript": "^5.5.4"
+  }
+}

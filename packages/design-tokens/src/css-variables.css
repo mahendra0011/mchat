@@ -1,0 +1,132 @@
+/**
+ * Aurora Paper CSS Variables & Design Token Definitions
+ */
+
+:root {
+  /* Light Theme (Default) */
+  --canvas: #F7F8FC;
+  --surface: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-muted: #F0F2F8;
+  --surface-sunken: #EFF1F7;
+  --text-primary: #171A2B;
+  --text-secondary: #5F6478;
+  --text-tertiary: #8C92AB;
+  --text-muted: #8C92AB;
+  --border-subtle: #E3E6EF;
+  --border-strong: #CBD1E1;
+  --brand-primary: #5955E8;
+  --accent-primary: #5955E8;
+  --accent-hover: #4843D2;
+  --accent-soft: #EEEDFF;
+  --accent-text: #FFFFFF;
+  --positive: #16866A;
+  --positive-soft: #E6F6F2;
+  --caution: #9C6200;
+  --caution-soft: #FEF6E7;
+  --danger: #C33B52;
+  --danger-soft: #FEEBED;
+  --focus-ring: #726DFF;
+
+  /* Overlay Opacity (Spec 05 tokens to centralize) */
+  --overlay-scrim: rgba(16, 18, 27, 0.65);
+
+  /* Scannable QR surfaces: intentionally theme-independent for scanner contrast */
+  --qr-surface: #FFFFFF;
+  --qr-ink: #1A202C;
+
+  /* Business Mode & Internal Note Tokens */
+  --business-badge: #805AD5;
+  --business-accent: #6B46C1;
+  --internal-note-bg: #FFFBEB;
+  --internal-note-border: #F59E0B;
+  --internal-note-text: #92400E;
+
+  /* Sizing, Radius, Elevation */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Z-Index Scale (Spec 05) */
+  --z-index-base: 0;
+  --z-index-sticky: 100;
+  --z-index-dropdown: 1000;
+  --z-index-modal: 1100;
+  --z-index-toast: 1200;
+
+  /* Density (Spec 05) */
+  --density-message-row-padding: 12px;
+
+  /* Motion */
+  --duration-micro: 120ms;
+  --duration-hover: 150ms;
+  --duration-surface: 200ms;
+  --duration-sheet: 260ms;
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+  --duration-slow: 320ms;
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.08), 0 2px 4px -2px rgba(16, 24, 40, 0.04);
+  --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+  --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.1), 0 8px 8px -4px rgba(16, 24, 40, 0.04);
+  --shadow-accent: 0 4px 12px rgba(89, 85, 232, 0.3);
+  --shadow-accent-lg: 0 8px 24px rgba(89, 85, 232, 0.3);
+}
+
+[data-theme='dark'] {
+  --canvas: #10121B;
+  --surface: #171A26;
+  --surface-elevated: #202437;
+  --surface-muted: #252A3D;
+  --surface-sunken: #131622;
+  --text-primary: #F3F4FB;
+  --text-secondary: #B6BAD0;
+  --text-tertiary: #6D7392;
+  --text-muted: #6D7392;
+  --border-subtle: #30364C;
+  --border-strong: #444C6B;
+  --brand-primary: #A5A1FF;
+  --accent-primary: #A5A1FF;
+  --accent-hover: #BBB8FF;
+  --accent-soft: #302E58;
+  --accent-text: #10121B;
+  --positive: #63D9B2;
+  --positive-soft: #153C31;
+  --caution: #F1C56B;
+  --caution-soft: #3D3012;
+  --danger: #FF8798;
+  --danger-soft: #3E1922;
+  --focus-ring: #B2AEFF;
+
+  --overlay-scrim: rgba(6, 8, 16, 0.72);
+
+  --business-badge: #B794F4;
+  --business-accent: #9F7AEA;
+  --internal-note-bg: #2A2010;
+  --internal-note-border: #F59E0B;
+  --internal-note-text: #FDE68A;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 16px -4px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 24px -4px rgba(0, 0, 0, 0.55), 0 8px 8px -4px rgba(0, 0, 0, 0.4);
+  --shadow-accent: 0 4px 12px rgba(165, 161, 255, 0.35);
+  --shadow-accent-lg: 0 8px 24px rgba(165, 161, 255, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

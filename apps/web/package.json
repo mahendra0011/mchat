@@ -1,0 +1,35 @@
+{
+  "name": "@orbit/web",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install chromium"
+  },
+  "dependencies": {
+    "@orbit/design-tokens": "workspace:*",
+    "@orbit/schemas": "workspace:*",
+    "@orbit/domain": "workspace:*",
+    "@orbit/localization": "workspace:*",
+    "@orbit/api-client": "workspace:*",
+    "@orbit/crypto-adapter": "workspace:*",
+    "@orbit/secure-storage": "workspace:*",
+    "@orbit/test-fixtures": "workspace:*",
+    "lucide-react": "^0.400.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.64.1",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.3.4"
+  }
+}

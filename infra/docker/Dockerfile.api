@@ -1,0 +1,35 @@
+# Build stage
+FROM node:20-alpine AS build
+WORKDIR /app
+
+RUN corepack enable
+
+# Install workspace deps first for better layer caching
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY packages ./packages
+COPY apps/api ./apps/api
+COPY tsconfig.base.json ./
+
+RUN pnpm install --frozen-lockfile --filter @orbit/api... && pnpm --filter @orbit/api build
+
+# Runtime stage — minimal image, no dev deps
+FROM node:20-alpine AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+
+RUN corepack enable && addgroup -S orbit && adduser -S orbit -G orbit
+
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/packages ./packages
+COPY --from=build /app/apps/api/dist ./apps/api/dist
+COPY --from=build /app/apps/api/package.json ./apps/api/package.json
+
+# Media uploads directory (mount a volume / object storage in production)
+RUN mkdir -p /app/uploads && chown -R orbit:orbit /app
+USER orbit
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
+  CMD wget -qO- http://127.0.0.1:8080/v1/health || exit 1
+
+CMD ["node", "apps/api/dist/server.js"]

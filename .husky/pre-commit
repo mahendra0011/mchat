@@ -1,0 +1,10 @@
+#!/bin/sh
+# Pre-commit hook: Secret scan
+# Runs detect-secrets scan to block commits if secrets are detected in new files
+
+npx detect-secrets scan || {
+  echo "❌ Secret detection failed. Commit blocked."
+  echo "Run 'npx detect-secrets scan --json' for details."
+  exit 1
+}
+exit 0

@@ -1,0 +1,38 @@
+{
+  "name": "Orbit Chat — Calm, Fast, Private & Human Digital Workspace",
+  "short_name": "Orbit Chat",
+  "description": "Next-generation chat platform with separate personal and business identities, real-time messaging, privacy receipts, context vault, and workflow cards.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FFFFFF",
+  "theme_color": "#5955E8",
+  "categories": ["productivity", "business", "social"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Inbox",
+      "url": "/?nav=inbox",
+      "description": "Open your unified inbox"
+    },
+    {
+      "name": "Search",
+      "url": "/?nav=search",
+      "description": "Search messages and conversations"
+    }
+  ]
+}

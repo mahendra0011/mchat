@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orbit-uploads
+  labels:
+    app: orbit-api
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  # storageClassName: gp3   # pin to your cluster's default class
+---
+# NOTE: media should ultimately target object storage (S3) with scoped, expiring
+# URLs rather than a local PVC. This PVC is a stopgap for single-cluster demos;
+# see infra/terraform for the S3 bucket used in real deployments.

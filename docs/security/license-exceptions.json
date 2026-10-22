@@ -1,0 +1,5 @@
+{
+  "policy": "Exceptions require owner, rationale, scope and expiry. Reviewed by the security owner.",
+  "approvedPackages": [],
+  "exceptions": []
+}

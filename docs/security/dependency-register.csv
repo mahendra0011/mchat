@@ -1,0 +1,14 @@
+Category,Package / Library,Version,License,Purpose / Why Selected,Data Touched,Owner,Known Limitation / Guardrail,Review Status
+Monorepo & Build,pnpm,9.15.0,MIT,Deterministic lockfile and fast workspace link management,None (Developer environment only),Platform Lead,Pinned version in package.json; strict lockfile,Approved
+Monorepo & Build,TypeScript,5.9.3,Apache-2.0,Strict end-to-end static typing across all packages and apps,None (Compile-time only),Architecture Lead,Strict compiler flags enabled across all tsconfig files,Approved
+Web Framework,Vite,5.4.21,MIT,High-performance ES module bundler and frontend development server,Client assets and UI bundle,Frontend Lead,Zero telemetry plugins; strict CORS origin headers,Approved
+Web Framework,React,18.3.1,MIT,Component state hierarchy and declarative DOM rendering,UI view models and reactive state,Frontend Lead,All user-supplied content sanitized before DOM insertion,Approved
+Web Framework,React DOM,18.3.1,MIT,Browser DOM reconciliation and event delegation,UI view models,Frontend Lead,No direct dangerouslySetInnerHTML usage permitted,Approved
+Web UI Primitives,lucide-react,0.460.0,ISC,Accessible semantic vector iconography,None (Visual rendering only),Design Systems Lead,Tree-shaken icons to optimize bundle size,Approved
+Validation & Contracts,Zod,3.25.76,MIT,Runtime schema validation for APIs and internal domain objects,All incoming and outgoing request payloads,Backend Lead,Strip unknown fields; strict email and uuid patterns,Approved
+Server Runtime,Fastify,4.28.1,MIT,High-throughput modular HTTP and WebSocket server,HTTP request and response streams,Backend Lead,Body logging disabled for privacy compliance,Approved
+Server Plugins,@fastify/cors,9.0.1,MIT,Cross-Origin Resource Sharing security enforcement,Origin headers,Security Lead,Allowlist scoped only to trusted frontend origins,Approved
+Server Plugins,@fastify/websocket,10.0.1,MIT,RFC-compliant WebSocket connections and event streams,Realtime event envelopes and presence cursors,Backend Lead,Origin validation and per-connection frame limits,Approved
+Cryptography,WebCrypto API,W3C Native,W3C Standard,Audited AES-256-GCM symmetric encryption and SHA-256 digests,Plaintext message payloads and encryption keys,Security Lead,Private keys never leave client devices,Approved
+Logging & Redaction,Custom Pino-compatible redaction,1.0.0,MIT,Content-free telemetry and redacted structured audit logs,System operational metadata (zero message bodies),DevOps Lead,Hardcoded forbid-lists prevent logging tokens or passwords,Approved
+Testing Framework,node:test,Node Native,Node License,Built-in zero-dependency testing runner and assertions,Test fixtures and mock accounts,QA Lead,Reproducible fixture IDs isolated from production,Approved

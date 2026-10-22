@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Orbit Chat",
+    "slug": "orbit-chat",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f1118"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.orbit.chat"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0f1118"
+      },
+      "package": "com.orbit.chat"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-notifications"
+    ],
+    "scheme": "orbit",
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    }
+  }
+}

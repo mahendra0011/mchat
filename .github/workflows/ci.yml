@@ -1,0 +1,142 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, Lint, Test, Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      NODE_ENV: test
+      AUTH_JWT_SECRET: ci-only-jwt-secret-at-least-32-chars-long
+      SESSION_COOKIE_SECRET: ci-only-cookie-secret-at-least-32-chars
+      API_BASE_URL: http://localhost:4000
+      WS_BASE_URL: ws://localhost:4000/v1/realtime
+      REDACT_SENSITIVE_LOGS: "true"
+      ENABLE_LOCAL_DEMO_FIXTURES: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages and apps
+        run: pnpm build
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit and integration tests
+        run: pnpm test
+
+  e2e:
+    name: Playwright E2E (smoke + a11y + e2e)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Flaky-infra guard: e2e must not block the pipeline (harness is new).
+    continue-on-error: true
+
+    env:
+      NODE_ENV: test
+      AUTH_JWT_SECRET: ci-only-jwt-secret-at-least-32-chars-long
+      SESSION_COOKIE_SECRET: ci-only-cookie-secret-at-least-32-chars
+      API_BASE_URL: http://localhost:4000
+      WS_BASE_URL: ws://localhost:4000/v1/realtime
+      REDACT_SENSITIVE_LOGS: "true"
+      ENABLE_LOCAL_DEMO_FIXTURES: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build API
+        run: pnpm --filter @orbit/api build
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @orbit/web test:e2e:install --with-deps
+
+      - name: Run E2E tests (smoke + a11y + e2e)
+        run: pnpm --filter @orbit/web test:e2e --project=chromium
+
+  load-test:
+    name: Playwright Load Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Load tests are allowed to fail without blocking the pipeline.
+    continue-on-error: true
+
+    env:
+      NODE_ENV: test
+      AUTH_JWT_SECRET: ci-only-jwt-secret-at-least-32-chars-long
+      SESSION_COOKIE_SECRET: ci-only-cookie-secret-at-least-32-chars
+      API_BASE_URL: http://localhost:4000
+      WS_BASE_URL: ws://localhost:4000/v1/realtime
+      REDACT_SENSITIVE_LOGS: "true"
+      ENABLE_LOCAL_DEMO_FIXTURES: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build API
+        run: pnpm --filter @orbit/api build
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @orbit/web test:e2e:install --with-deps
+
+      - name: Run load tests
+        run: pnpm --filter @orbit/web test:e2e --project=chromium --grep "Load tests"

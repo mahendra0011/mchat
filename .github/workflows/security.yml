@@ -1,0 +1,185 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    # Only meaningful on pull requests (compares the PR's lockfile against the base).
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  codeql:
+    name: CodeQL (JavaScript/TypeScript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      # CodeQL JS analyzes source without a build; install anyway so config
+      # discovery (tsconfig, generated-code settings) sees the full workspace.
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"
+
+  gitleaks:
+    name: Gitleaks (Secret Detection)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Free docker-based scan — no GITHUB_TOKEN license requirements of the
+      # gitleaks-action on organization repos.
+      - name: Scan repository for secrets
+        run: >
+          docker run -v "${{ github.workspace }}:/repo"
+          zricethezav/gitleaks:latest
+          detect --source=/repo --no-banner --redact
+
+  license-check:
+    name: License Policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Enforce dependency license policy
+        run: pnpm licenses:check
+
+  trivy:
+    name: Trivy (filesystem + IaC)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan filesystem for HIGH/CRITICAL vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          format: sarif
+          output: trivy-fs.sarif
+
+      - name: Scan infrastructure-as-code and Dockerfiles
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: config
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          format: sarif
+          output: trivy-config.sarif
+
+      - name: Upload scan results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-sarif
+          path: trivy-*.sarif
+          retention-days: 30
+
+  npm-audit:
+    name: pnpm audit (high+)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Surfaces findings without blocking CI on advisory lag / false positives.
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Audit dependencies (high severity and above)
+        run: pnpm audit --audit-level=high

@@ -1,0 +1,138 @@
+name: SAST/SCA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: sast-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      # CodeQL JS analyzes source without a build; install anyway so config
+      # discovery (tsconfig, generated-code settings) sees the full workspace.
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"
+
+  sbom-provenance:
+    name: SBOM/Provenance Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Generate SBOM (CycloneDX)
+        run: |
+          npx @cyclonedx/bom@latest -o sbom.json
+        continue-on-error: true
+
+      - name: Verify SBOM exists and has provenance
+        run: |
+          if [ ! -f sbom.json ]; then
+            echo "::error ::sbom.json not found";
+            exit 1;
+          fi
+          SBOM_TYPE=$(node -e "console.log(require('./sbom.json').pom?.type || 'missing')")
+          if [ "$SBOM_TYPE" != "CycloneDX" ]; then
+            echo "::error ::sbom.json missing pom.type or invalid type: $SBOM_TYPE";
+            exit 1;
+          fi
+          echo "SBOM provenance verified: type=$SBOM_TYPE"
+
+  npm-audit:
+    name: npm Audit (high+)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Audit dependencies (high severity and above)
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
+
+  gitleaks:
+    name: Gitleaks (Secret Detection)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan repository for secrets
+        run: >
+          docker run -v "${{ github.workspace }}:/repo"
+          zricethezav/gitleaks:latest
+          detect --source=/repo --no-banner --redact

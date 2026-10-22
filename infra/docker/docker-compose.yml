@@ -1,0 +1,102 @@
+# Local/staging reference topology. Production must inject secrets from a
+# secret manager and terminate TLS at the edge (see docs/security/infrastructure.md).
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: orbit
+      POSTGRES_USER: orbit
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-orbit_dev_password}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orbit -d orbit"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "127.0.0.1:6379:6379"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile.api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      HOST: "0.0.0.0"
+      DATABASE_URL: postgres://orbit:${POSTGRES_PASSWORD:-orbit_dev_password}@postgres:5432/orbit
+      REDIS_URL: redis://redis:6379
+      AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:-local-dev-auth-secret-not-for-production}
+      SESSION_COOKIE_SECRET: ${SESSION_COOKIE_SECRET:-local-dev-session-secret-not-for-production}
+      ORBIT_MEDIA_SIGNING_SECRET: ${ORBIT_MEDIA_SIGNING_SECRET:-local-dev-media-signing-secret}
+    volumes:
+      - uploads:/app/uploads
+    ports:
+      - "127.0.0.1:8080:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    init: true
+    networks:
+      - backend
+      - frontend
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile.web
+    depends_on:
+      - api
+    ports:
+      - "3000:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - frontend
+    restart: unless-stopped
+
+networks:
+  frontend:
+    name: orbit_frontend
+  backend:
+    name: orbit_backend
+
+volumes:
+  pgdata:
+  redisdata:
+  uploads:

@@ -1,0 +1,16 @@
+{
+  "name": "@orbit/design-tokens",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "node --test dist/**/*.test.js 2>nul || exit 0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

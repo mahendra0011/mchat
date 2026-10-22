@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Orbit Chat",
+    "slug": "orbit-chat",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "orbit",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#F7F8FC",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.orbit.chat"
+    },
+    "android": {
+      "package": "com.orbit.chat",
+      "adaptiveIcon": {
+        "backgroundColor": "#5955E8"
+      }
+    },
+    "plugins": ["expo-secure-store"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

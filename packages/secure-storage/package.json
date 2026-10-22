@@ -1,0 +1,9 @@
+{
+  "name": "@orbit/secure-storage",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "description": "Secure storage service using IndexedDB with crypto-backed randomness",
+  "sideEffects": false
+}

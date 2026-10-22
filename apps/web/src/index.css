@@ -1,0 +1,235 @@
+@import '../../../packages/design-tokens/src/css-variables.css';
+
+/* Reset & Base Rules */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--canvas);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar for Aurora Paper */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Glassmorphism Surface Utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+}
+
+[data-theme='dark'] .glass-panel {
+  background: rgba(23, 26, 38, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+}
+
+/* Aurora Paper Glow Utility */
+.aurora-glow-bg {
+  background: radial-gradient(circle at 10% 20%, rgba(89, 85, 232, 0.08) 0%, transparent 40%),
+              radial-gradient(circle at 90% 80%, rgba(22, 134, 106, 0.06) 0%, transparent 40%),
+              var(--canvas);
+}
+
+[data-theme='dark'] .aurora-glow-bg {
+  background: radial-gradient(circle at 10% 20%, rgba(165, 161, 255, 0.1) 0%, transparent 45%),
+              radial-gradient(circle at 90% 80%, rgba(99, 217, 178, 0.08) 0%, transparent 45%),
+              var(--canvas);
+}
+
+/* Typing indicator dots animation (Spec 02 P0) */
+@keyframes typingDot {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* Focus ring for accessibility (Spec 04) */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support (Spec 04) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Screen-reader only utility (Spec 04 accessibility) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Empty state styling (Spec 04) */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  gap: 12px;
+}
+.empty-state-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.empty-state-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+/* Focus Ring Utility */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Subtle Micro-Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Modal / popover entrance (Spec 06) */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--duration-fast) var(--ease-emphasized) both;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.4s ease-in-out infinite;
+}
+
+/* High Contrast Mode Overrides */
+[data-high-contrast='true'] {
+  --border-subtle: #000000;
+  --border-strong: #000000;
+  --text-secondary: #000000;
+}
+
+[data-theme='dark'][data-high-contrast='true'] {
+  --border-subtle: #FFFFFF;
+  --border-strong: #FFFFFF;
+  --text-secondary: #FFFFFF;
+}
+
+/* Reduced Motion Overrides (Spec 06 Motion and Interactions) */
+@media (prefers-reduced-motion: reduce), (update: slow) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+[data-reduced-motion='true'] *,
+[data-reduced-motion='true'] *::before,
+[data-reduced-motion='true'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Right-to-Left (RTL) Layout & Mirroring Support (Spec 15 Accessibility & Localization) */
+[dir='rtl'] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir='rtl'] .rtl-mirror {
+  transform: scaleX(-1);
+}
+
+/* Screen Reader Only Utility for Assistive Announcements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Density plumbing (Spec 05): components consume --message-row-padding,
+   which resolves from the theme-independent density token so a future
+   [data-density="..."] attribute override changes it globally. */
+:root {
+  --message-row-padding: var(--density-message-row-padding);
+}
+
+[data-density='cozy'] {
+  --density-message-row-padding: 10px;
+}
+
+[data-density='compact'] {
+  --density-message-row-padding: 8px;
+}
+
+/* Wave C — App density values (SettingsModal: compact | standard | comfortable). */
+[data-density='standard'] {
+  --density-message-row-padding: 10px;
+}
+
+[data-density='comfortable'] {
+  --density-message-row-padding: 14px;
+}
+
